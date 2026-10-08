@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quest of Ten — Fight for Your Destiny (VS Code Edition)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=accounts-9">
+</head>
+<body>
+
+  <!-- ================= LOADING SCREEN ================= -->
+  <div id="loadingScreen" class="loading-screen" role="dialog" aria-modal="true" aria-label="Loading Quest of Ten">
+    <div class="loading-bg"></div>
+    <div class="loading-content">
+      <div class="loading-crest"><span>✦</span></div>
+      <span class="loading-overtitle">AN ADVENTURE BEYOND THE STARS</span>
+      <h1 class="loading-title">QUEST <span>OF</span> TEN</h1>
+      <div class="loading-tagline"><i></i> FIGHT FOR YOUR DESTINY <i></i></div>
+      <p class="loading-promise">Ten warriors. Ten realms. <em>One legend.</em></p>
+
+      <div class="loading-box">
+        <div class="loading-box-top">
+          <div class="loading-status">
+            <span class="loading-dot"></span>
+            <div>
+              <span class="loading-label">PREPARING YOUR JOURNEY</span>
+              <p id="loadingStageText">Awakening the realm...</p>
+            </div>
+          </div>
+          <span id="loadingPercent" class="loading-percent">00<small>%</small></span>
+        </div>
+        <div id="loadingTrack" class="loading-track" role="progressbar" aria-label="Loading Quest of Ten" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div id="loadingFill" class="loading-fill" style="width: 0%;"></div>
+        </div>
+        <div class="loading-milestones">
+          <span class="lm-star">✦</span><span class="lm-star">✦</span><span class="lm-star">✦</span><span class="lm-star">✦</span><span class="lm-star">✦</span>
+          <span class="lm-star">✦</span><span class="lm-star">✦</span><span class="lm-star">✦</span><span class="lm-star">✦</span><span class="lm-star">✦</span>
+        </div>
+        <div class="loading-tip">
+          <span>✧ &nbsp; VISUAL STUDIO CODE EDITION</span>
+          <p>HTML5 · CSS3 · Pure JavaScript · Standalone 2D Fighting Game</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TOAST NOTIFICATION ================= -->
+  <div id="toastNotification" class="toast-notification hidden" role="status">
+    <span id="toastIcon">✦</span>
+    <p id="toastMessage">Welcome to Quest of Ten!</p>
+  </div>
+
+  <!-- ================= MAIN MENU (REFERENCE UI) ================= -->
+  <main id="mainMenu" class="main-menu-view">
+    <div class="menu-bg"></div>
+    <div class="menu-glimmer"></div>
+    <div class="menu-frame"></div>
+
+    <header class="menu-topline">
+      <div class="menu-world-tag"><span>✦</span> THE WORLD OF ELDORIA <i></i> SEASON I: THE AWAKENING</div>
+      <div class="menu-top-right">
+        <div class="audio-quick-wrap">
+          <button id="btnSoundToggle" class="menu-icon-btn" title="Audio controls" aria-expanded="false">🔊</button>
+          <div id="audioQuickControls" class="audio-quick-controls hidden" aria-label="Audio controls">
+            <button id="btnAudioPlay" type="button" title="Play music" aria-label="Play music">▶</button>
+            <button id="btnAudioPause" type="button" title="Pause music" aria-label="Pause music">Ⅱ</button>
+            <button id="btnAudioVolumeDown" type="button" title="Volume down" aria-label="Volume down">−</button>
+            <button id="btnAudioVolumeUp" type="button" title="Volume up" aria-label="Volume up">＋</button>
+            <button id="btnAudioMute" type="button" title="Mute or unmute" aria-label="Mute or unmute">🔊</button>
+          </div>
+        </div>
+        <button id="btnAccountOpen" class="menu-user-btn"><span class="avatar-mini">👤</span> <span id="menuUsername">GUEST HERO</span></button>
+      </div>
+    </header>
+
+    <div class="menu-center">
+      <img class="menu-logo-img" src="assets/logo-quest-of-ten.png" alt="Quest of Ten">
+      <div class="menu-tagline"><i></i> FIGHT FOR YOUR DESTINY <i></i></div>
+      <div class="menu-divider"><span>✦</span></div>
+
+      <nav class="menu-nav-stack" aria-label="Game Navigation">
+        <button id="btnPlay" class="menu-btn menu-btn--play"><span class="btn-text">PLAY</span> <span class="btn-arrow">➔</span></button>
+        <button id="btnCharacters" class="menu-btn"><span class="btn-text">CHARACTERS</span></button>
+        <button id="btnProfile" class="menu-btn"><span class="btn-text">PROFILE</span></button>
+        <button id="btnAchievements" class="menu-btn"><span class="btn-text">ACHIEVEMENTS</span></button>
+        <button id="btnLeaderboard" class="menu-btn"><span class="btn-text">LEADERBOARD</span></button>
+        <button id="btnSettings" class="menu-btn"><span class="btn-text">SETTINGS</span></button>
+      </nav>
+
+      <div class="menu-quick-actions">
+        <button id="btnQuickArena" class="quick-btn">⚔️ BOT ARENA</button>
+        <button id="btnQuickSummon" class="quick-btn">✨ SUMMON</button>
+        <button id="btnQuickInventory" class="quick-btn">🎒 INVENTORY</button>
+        <button id="btnDownloadZip" class="quick-btn quick-btn--highlight">💾 VS CODE READY</button>
+      </div>
+    </div>
+
+    <div class="menu-hero-tag">
+      <span class="hero-tag-line"></span>
+      <span class="hero-tag-sub">ACTIVE CHAMPION</span>
+      <strong id="menuActiveHeroName">AERON</strong>
+      <small id="menuActiveHeroTitle">The Flame Striker</small>
+    </div>
+
+    <footer class="menu-bottomline">
+      <span>👑 10 HEROES · 10 CHAPTERS · ONE DESTINY</span>
+      <div class="menu-resources-bar">
+        <span class="res-item">🪙 <b id="menuCoins">3,000</b> GOLD</span>
+        <span class="res-item">💎 <b id="menuGems">200</b> GEMS</span>
+        <span class="res-item">⚡ <b id="menuEnergy">50/50</b> ENERGY</span>
+        <span class="res-item">🧪 <b id="menuPotions">15</b> POTIONS</span>
+      </div>
+    </footer>
+  </main>
+
+  <!-- ================= SUB-SCREENS CONTAINER ================= -->
+  <div id="subViewContainer" class="sub-view-container hidden">
+    <!-- Topbar navigation -->
+    <header class="game-topbar">
+      <div class="topbar-left">
+        <button id="btnReturnMenu" class="topbar-back-btn">⬅ MAIN MENU</button>
+        <span class="topbar-breadcrumb">ELDORIA ❯ <strong id="topbarViewTitle">ADVENTURE</strong></span>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-pills">
+          <span class="pill pill--gold" title="Gold Coins">🪙 <b id="topbarCoins">3,000</b></span>
+          <span class="pill pill--gems" title="Astral Crystals">💎 <b id="topbarGems">200</b></span>
+          <span class="pill pill--energy" title="Battle Energy">⚡ <b id="topbarEnergy">50/50</b></span>
+          <span class="pill pill--potions" title="Healing Potions">🧪 <b id="topbarPotions">15</b></span>
+        </div>
+        <button id="btnDailyTopbar" class="daily-gift-btn" title="Daily Reward">🎁</button>
+      </div>
+    </header>
+
+    <div class="sub-view-body">
+
+      <!-- ================= 1. ADVENTURE / CHAPTER MODE ================= -->
+      <section id="adventureView" class="view-panel hidden">
+        <div class="view-intro">
+          <div>
+            <span class="eyebrow">THE PATH OF DESTINY</span>
+            <h2>10 Chapters · 50 Battles</h2>
+            <p>Conquer 4 mob encounters per chapter, then face the ancient realm boss.</p>
+          </div>
+          <div class="progress-badge">
+            <span>CAMPAIGN STATUS</span>
+            <b id="adventureClearedCount">0 / 50</b>
+          </div>
+        </div>
+
+        <div id="adventureFighterBar" class="fighter-bar-slot"></div>
+
+        <div class="adventure-split">
+          <div class="chapters-sidebar">
+            <span class="sidebar-title">THE TEN REALMS</span>
+            <div id="chapterList" class="chapter-list"></div>
+          </div>
+          <div class="chapter-content-panel">
+            <div id="chapterHeaderCard" class="chapter-header-card">
+              <div class="ch-text">
+                <span id="chElementBadge" class="element-badge">FIRE REALM</span>
+                <h3 id="chNameTitle">Chapter 01: The Ashen Gate</h3>
+                <p id="chDescText">A forgotten stone gate stirs beneath the moon. The first embers of war awake.</p>
+                <small id="chRealmLocation">📍 Emberfall Ruins</small>
+              </div>
+            </div>
+            <div class="levels-container">
+              <span class="levels-title">CHAPTER ENCOUNTERS (4 MOBS + 1 BOSS)</span>
+              <div id="levelsList" class="levels-list"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ADVENTURE HERO SELECTION ================= -->
+      <section id="heroSelectView" class="view-panel hidden battle-select-view">
+        <div class="view-intro">
+          <div>
+            <span class="eyebrow">CHOOSE YOUR DESTINY</span>
+            <h2>Select Your Hero</h2>
+            <p>Choose the champion who will enter this chapter battle.</p>
+          </div>
+        </div>
+        <div class="battle-select-layout">
+          <div id="heroSelectGrid" class="battle-select-grid"></div>
+          <aside id="heroSelectDetail" class="battle-select-detail"></aside>
+        </div>
+        <div class="battle-select-actions">
+          <button id="btnHeroSelectBack" class="selection-back-btn">← BACK</button>
+          <button id="btnConfirmHero" class="selection-confirm-btn" disabled>CONFIRM HERO</button>
+        </div>
+      </section>
+
+      <!-- ================= ADVENTURE OPPONENT SELECTION ================= -->
+      <section id="opponentSelectView" class="view-panel hidden battle-select-view">
+        <div class="view-intro">
+          <div>
+            <span class="eyebrow">FACE YOUR RIVAL</span>
+            <h2>Select Your Opponent</h2>
+            <p>Choose one of the remaining champions for the battle AI to control.</p>
+          </div>
+        </div>
+        <div class="battle-select-layout">
+          <div id="opponentSelectGrid" class="battle-select-grid"></div>
+          <aside id="opponentSelectDetail" class="battle-select-detail"></aside>
+        </div>
+        <div class="battle-select-actions">
+          <button id="btnOpponentSelectBack" class="selection-back-btn">← BACK</button>
+          <button id="btnConfirmOpponent" class="selection-confirm-btn" disabled>CONFIRM OPPONENT</button>
+        </div>
+      </section>
+
+      <!-- ================= ADVENTURE MATCHUP PREVIEW ================= -->
+      <section id="matchupPreviewView" class="view-panel hidden battle-select-view">
+        <div class="view-intro">
+          <div>
+            <span class="eyebrow">DESTINY AWAITS</span>
+            <h2>Matchup Preview</h2>
+            <p id="storyMatchupContext">Chapter battle ready.</p>
+          </div>
+        </div>
+        <div id="storyMatchupBanner" class="matchup-banner story-matchup-banner">
+          <div id="storyMatchupBg" class="matchup-bg"></div>
+          <div class="matchup-content story-matchup-content">
+            <div class="fighter-side story-fighter-side">
+              <canvas id="storyMatchupPlayerCanvas" width="256" height="256"></canvas>
+              <small>PLAYER</small>
+              <span id="storyMatchupPlayerName">AERON</span>
+            </div>
+            <div class="vs-circle">VS</div>
+            <div class="fighter-side story-fighter-side">
+              <canvas id="storyMatchupOpponentCanvas" width="256" height="256"></canvas>
+              <small>OPPONENT</small>
+              <span id="storyMatchupOpponentName">KAEL</span>
+            </div>
+          </div>
+        </div>
+        <div class="battle-select-actions">
+          <button id="btnMatchupBack" class="selection-back-btn">← BACK</button>
+          <button id="btnStartStoryMatch" class="selection-confirm-btn">⚔ START BATTLE</button>
+        </div>
+      </section>
+
+      <!-- ================= 2. CHARACTERS SCREEN ================= -->
+      <section id="charactersView" class="view-panel hidden">
+        <div class="view-intro">
+          <div>
+            <span class="eyebrow">THE CHOSEN TEN</span>
+            <h2>The Hero Roster</h2>
+            <p>Inspect all 10 heroes, preview their sprite animations, and pick your active fighter.</p>
+          </div>
+          <div class="unlocked-counter">
+            <span>UNLOCKED HEROES</span>
+            <b id="rosterUnlockedCount">3 / 10</b>
+          </div>
+        </div>
+
+        <div class="characters-layout">
+          <div class="roster-grid-col">
+            <div class="roster-filter-tabs">
+              <button class="filter-btn active" data-filter="all">ALL (10)</button>
+              <button class="filter-btn" data-filter="unlocked">UNLOCKED</button>
+              <button class="filter-btn" data-filter="locked">LOCKED</button>
+            </div>
+            <div id="rosterCardsGrid" class="roster-cards-grid"></div>
+          </div>
+
+          <aside class="hero-detail-card">
+            <div class="hd-header">
+              <span id="hdHeroRarity" class="hd-rarity">LEGENDARY · FIRE</span>
+              <span id="hdHeroIdBadge" class="hd-id">01 / 10</span>
+            </div>
+            <div class="hd-sprite-stage">
+              <canvas id="hdPreviewCanvas" width="256" height="256" class="hd-canvas"></canvas>
+              <div class="hd-anim-toggles">
+                <button class="anim-tab active" data-anim="idle">IDLE</button>
+                <button class="anim-tab" data-anim="walk">WALK</button>
+                <button class="anim-tab" data-anim="attack">ATTACK</button>
+                <button class="anim-tab" data-anim="special">SPECIAL</button>
+              </div>
+            </div>
+            <div class="hd-info">
+              <h3 id="hdHeroName">Aeron</h3>
+              <p id="hdHeroTitle" class="hd-title">The Flame Striker</p>
+              <p id="hdHeroQuote" class="hd-quote">"Let the darkness learn to fear the light."</p>
+              <div class="hd-stats-grid">
+                <div><span>HP</span><b id="hdStatHp">3,200</b></div>
+                <div><span>POWER</span><b id="hdStatPower">380</b></div>
+                <div><span>SPEED</span><b id="hdStatSpeed">220</b></div>
+              </div>
+              <div class="hd-skills-block">
+                <span>ABILITIES & MAGIC</span>
+                <div id="hdSkillsList" class="hd-skills-list"></div>
+              </div>
+              <div id="hdAeronShowcase" class="aeron-vfx-showcase hidden">
+                <span class="vfx-tag">✦ CRIMSON VOLCANIC SKILLS</span>
+                <img src="images/skills/aeron_skill_master.jpg" alt="Aeron Skills Reference" class="vfx-preview-img">
+              </div>
+              <button id="btnSelectActiveHero" class="select-hero-btn">CHOOSE FIGHTER</button>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ================= 3. BOT ARENA LOBBY ================= -->
+      <section id="arenaLobbyView" class="view-panel hidden">
+        <div class="view-intro">
+          <div>
+            <span class="eyebrow">THE PROVING GROUNDS</span>
+            <h2>Arena Fight Mode</h2>
+            <p>Pick your fight stage and challenge bot-controlled champions.</p>
+          </div>
+          <div class="rank-badge">
+            <span>CURRENT RANK</span>
+            <b id="arenaRankText">BRONZE · 1000 RP</b>
+          </div>
+        </div>
+
+        <!-- 4 Arena Stages Selector -->
+        <div class="arena-section-block">
+          <div class="sec-head">
+            <span class="eyebrow">4 BATTLE ARENAS</span>
+            <h3>Select Fight Stage Background</h3>
+          </div>
+          <div id="arenaStageSelectorGrid" class="arena-stage-grid"></div>
+        </div>
+
+        <!-- Fighter Picker -->
+        <div class="arena-section-block">
+          <div class="sec-head">
+            <span class="eyebrow">YOUR FIGHTER</span>
+            <h3>Choose Active Champion</h3>
+          </div>
+          <div id="arenaFighterBar" class="arena-fighter-bar"></div>
+        </div>
+
+        <!-- Duel Matchup Preview Card -->
+        <div class="matchup-banner">
+          <div id="matchupBg" class="matchup-bg"></div>
+          <div class="matchup-content">
+            <div class="matchup-box">
+              <span class="matchup-stage-name" id="matchupStageLabel">MOONLIT SANCTUARY</span>
+              <h3>BATTLE FOR GLORY</h3>
+              <p>Entry Cost: 2 Energy · Defeat the bot to earn Gold, XP, and Ranking Points.</p>
+              <button id="btnStartArenaDuel" class="btn-duel-start">⚔️ ENTER ARENA BATTLE</button>
+            </div>
+            <div class="matchup-fighters">
+              <div class="fighter-side">
+                <canvas id="matchupPlayerCanvas" width="256" height="256"></canvas>
+                <span id="matchupPlayerName">AERON (YOU)</span>
+              </div>
+              <div class="vs-circle">VS</div>
+              <div class="fighter-side">
+                <canvas id="matchupEnemyCanvas" width="256" height="256"></canvas>
+                <div class="enemy-meta">
+                  <span id="matchupEnemyName">KAEL (BOT)</span>
+                  <button id="btnRerollRival" class="reroll-btn" title="Choose another rival">🎲 Reroll</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 4. SUMMON PORTAL ================= -->
+      <section id="summonView" class="view-panel hidden">
+        <div class="view-intro">
+          <div>
+            <span class="eyebrow">ASTRAL SUMMONING</span>
+            <h2>The Portal of Ten</h2>
+            <p>Awaken new champions to join your team. 600 Gold per summon.</p>
+          </div>
+          <div class="res-balance">
+            <span>YOUR GOLD</span>
+            <b id="summonGoldCount">🪙 3,000</b>
+          </div>
+        </div>
+
+        <div class="summon-center-stage">
+          <div class="portal-circle">
+            <div class="portal-outer"></div>
+            <div class="portal-middle"></div>
+            <div class="portal-inner"></div>
+            <div class="portal-star">✦</div>
+          </div>
+          <h3>Awaken a Legend</h3>
+          <p>Unleash the astral gate. Duplicates award 200 Gold back.</p>
+          <button id="btnPerformSummon" class="btn-summon-action">✨ SUMMON CHAMPION (600 GOLD)</button>
+        </div>
+      </section>
+
+      <!-- ================= 5. INVENTORY & SHOP ================= -->
+      <section id="inventoryView" class="view-panel hidden">
+        <div class="view-intro">
+          <div>
+            <span class="eyebrow">PREPARATION & SUPPLIES</span>
+            <h2>Inventory & Restock</h2>
+            <p>Buy healing potions, restore energy, and claim your daily gifts.</p>
+          </div>
+        </div>
+
+        <div class="inventory-grid">
+          <div class="inv-card">
+            <div class="inv-icon">🧪</div>
+            <div class="inv-info">
+              <h4>Healing Potion</h4>
+              <p>Restores 38% maximum HP during combat.</p>
+              <small id="invPotionCount">In Bag: 3 Potions</small>
+            </div>
+            <button id="btnBuyPotion" class="inv-buy-btn">🪙 180 Gold</button>
+          </div>
+
+          <div class="inv-card">
+            <div class="inv-icon">⚡</div>
+            <div class="inv-info">
+              <h4>Energy Refill</h4>
+              <p>Instantly restores energy to maximum (50/50).</p>
+              <small id="invEnergyStatus">Current: 50 / 50</small>
+            </div>
+            <button id="btnBuyEnergy" class="inv-buy-btn">💎 60 Gems</button>
+          </div>
+
+          <div class="inv-card inv-card--daily">
+            <div class="inv-icon">🎁</div>
+            <div class="inv-info">
+              <h4>Daily Adventurer's Gift</h4>
+              <p>Receive +300 Gold and +1 Healing Potion every day.</p>
+              <small id="invDailyStatus">Status: Available</small>
+            </div>
+            <button id="btnClaimDailyReward" class="inv-buy-btn inv-buy-btn--gold">CLAIM DAILY GIFT</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 6. PROFILE VIEW ================= -->
+      <section id="profileView" class="view-panel hidden">
+        <div class="view-intro">
+          <div>
+            <span class="eyebrow">WARRIOR STATS</span>
+            <h2>Adventurer Profile</h2>
+            <p>Review your total victories, level progression, and hero collection.</p>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <div class="profile-hero-art">
+            <canvas id="profileHeroCanvas" width="256" height="256"></canvas>
+          </div>
+          <div class="profile-data">
+            <span class="profile-eyebrow">TITLE HOLDER OF ELDORIA</span>
+            <h3 id="profileNameDisplay">Guest Hero</h3>
+            <p id="profileRankDisplay">Level 1 · Bronze League</p>
+            <div class="profile-xp-bar">
+              <div class="px-label">
+                <span>EXPERIENCE</span>
+                <span id="profileXpText">0 / 300 XP</span>
+              </div>
+              <div class="px-track"><div id="profileXpFill" class="px-fill" style="width: 0%;"></div></div>
+            </div>
+            <div class="profile-stats-table">
+              <div><span>TOTAL WINS</span><b id="profileWins">0</b></div>
+              <div><span>TOTAL LOSSES</span><b id="profileLosses">0</b></div>
+              <div><span>STAGES CLEARED</span><b id="profileStagesCleared">0 / 50</b></div>
+              <div><span>UNLOCKED HEROES</span><b id="profileHeroesUnlocked">3 / 10</b></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 7. ACHIEVEMENTS VIEW ================= -->
+      <section id="achievementsView" class="view-panel hidden">
+        <div class="view-intro">
+          <div>
+            <span class="eyebrow">MARKS OF A HERO</span>
+            <h2>Achievements</h2>
+            <p>Unlock milestones across your adventures in Eldoria.</p>
+          </div>
+        </div>
+        <div id="achievementsList" class="achievements-grid"></div>
+      </section>
+
+      <!-- ================= 8. LEADERBOARD VIEW ================= -->
+      <section id="leaderboardView" class="view-panel hidden">
+        <div class="view-intro">
+          <div>
+            <span class="eyebrow">THE HALL OF CHAMPIONS</span>
+            <h2>Leaderboard</h2>
+            <p>The greatest warriors ranked by battle points and campaign progress.</p>
+          </div>
+        </div>
+        <div id="leaderboardTable" class="leaderboard-table"></div>
+      </section>
+
+      <!-- ================= 9. SETTINGS VIEW ================= -->
+      <section id="settingsView" class="view-panel hidden">
+        <div class="view-intro">
+          <div>
+            <span class="eyebrow">GAME CONFIGURATION</span>
+            <h2>Settings & Visual Studio Ready</h2>
+            <p>Configure preferences or download this game for Visual Studio Code.</p>
+          </div>
+        </div>
+        <div class="settings-box">
+          <div class="set-row">
+            <div>
+              <strong>Sound Effects & Audio</strong>
+              <small>Play battle sound effects and UI tones</small>
+            </div>
+            <button id="setSoundBtn" class="toggle-switch active"></button>
+          </div>
+          <div class="set-row set-row--audio">
+            <div>
+              <strong>Music</strong>
+              <small>Main Menu, Adventure, and Battle music</small>
+            </div>
+            <div class="audio-setting-controls">
+              <input id="musicVolume" type="range" min="0" max="100" step="5" aria-label="Music volume">
+              <button id="musicEnabledBtn" class="toggle-switch active" type="button" aria-label="Toggle music"></button>
+            </div>
+          </div>
+          <div class="set-row set-row--audio">
+            <div>
+              <strong>Hero Voices</strong>
+              <small>Intro, attack, skill, hurt, and victory voices</small>
+            </div>
+            <div class="audio-setting-controls">
+              <input id="voiceVolume" type="range" min="0" max="100" step="5" aria-label="Voice volume">
+              <button id="voiceEnabledBtn" class="toggle-switch active" type="button" aria-label="Toggle hero voices"></button>
+            </div>
+          </div>
+          <div class="set-row set-row--audio">
+            <div>
+              <strong>Sound Effects</strong>
+              <small>Battle impacts and interface tones</small>
+            </div>
+            <div class="audio-setting-controls">
+              <input id="sfxVolume" type="range" min="0" max="100" step="5" aria-label="Sound effects volume">
+              <button id="sfxEnabledBtn" class="toggle-switch active" type="button" aria-label="Toggle sound effects"></button>
+            </div>
+          </div>
+          <div class="set-row">
+            <div>
+              <strong>Reduced Motion</strong>
+              <small>Disable background camera shifts and floating stars</small>
+            </div>
+            <button id="setMotionBtn" class="toggle-switch"></button>
+          </div>
+          <div class="set-row">
+            <div>
+              <strong>Reset Local Game Progress</strong>
+              <small>Restore initial 3,000 gold, 3 heroes, level 1</small>
+            </div>
+            <button id="btnResetProgress" class="btn-danger">RESET DATA</button>
+          </div>
+          <div class="set-row">
+            <div>
+              <strong>Log Out</strong>
+              <small>Sign out so another player can create or use an account (your progress stays saved)</small>
+            </div>
+            <button id="btnLogout" class="btn-danger" type="button">LOG OUT</button>
+          </div>
+          <div class="set-row set-row--highlight">
+            <div>
+              <strong>Download VS Code Ready ZIP Package</strong>
+              <small>Complete standalone project with index.html, css/style.css, js/game.js, and all 10 hero sprite sheets</small>
+            </div>
+            <a href="quest-of-ten-vscode-menu-fixed.zip" download="quest-of-ten-vscode-menu-fixed.zip" class="btn-download-link">📥 DOWNLOAD UPDATED GAME</a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- ================= BATTLE VIEW (2D FIGHTING ARENA) ================= -->
+  <div id="battleView" class="battle-view-container hidden">
+    <!-- Cinematic Arena Container matching reference layout -->
+    <div id="battleArenaBg" class="cinematic-arena">
+      <div class="cinematic-arena-vignette"></div>
+
+      <!-- Top HUD Bar -->
+      <header class="cinematic-hud-top" aria-label="Battle status">
+        <div class="hud-side hud-side--player">
+          <div class="hud-hero-title">
+            <strong id="hudPlayerName">AERON</strong>
+            <small id="hudPlayerLv">Lv. 1</small>
+          </div>
+          <div class="hud-bars-stack">
+            <div class="hud-bar-row">
+              <span class="hud-bar-lbl">HP</span>
+              <div class="hud-track hud-track--hp">
+                <div id="hudPlayerHpFill" class="hud-bar-fill--hp" style="width: 100%;"></div>
+              </div>
+              <span id="hudPlayerHpText" class="hud-bar-val">3,200 / 3,200</span>
+            </div>
+            <div class="hud-bar-row">
+              <span class="hud-bar-lbl">MP</span>
+              <div class="hud-track hud-track--mp">
+                <div id="hudPlayerMpFill" class="hud-bar-fill--mp" style="width: 100%;"></div>
+              </div>
+              <span id="hudPlayerMpText" class="hud-bar-val">100 / 100</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hud-center-marker">
+          <div class="hud-vs-emblem">VS</div>
+          <div id="hudTurnText" class="hud-turn-pill">FIGHT!</div>
+        </div>
+
+        <div class="hud-side hud-side--enemy">
+          <div class="hud-hero-title hud-hero-title--right">
+            <strong id="hudEnemyName">KAEL</strong>
+            <small id="hudEnemyLv">BOT</small>
+          </div>
+          <div class="hud-bars-stack">
+            <div class="hud-bar-row">
+              <span class="hud-bar-lbl">HP</span>
+              <div class="hud-track hud-track--hp hud-track--enemy">
+                <div id="hudEnemyHpFill" class="hud-bar-fill--hp" style="width: 100%;"></div>
+              </div>
+              <span id="hudEnemyHpText" class="hud-bar-val">2,800 / 2,800</span>
+            </div>
+            <div class="hud-bar-row">
+              <span class="hud-bar-lbl">MP</span>
+              <div class="hud-track hud-track--mp hud-track--enemy">
+                <div class="hud-bar-fill--mp" style="width: 100%;"></div>
+              </div>
+              <span class="hud-bar-val">100 / 100</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dueling Platform Floor with Heroes -->
+      <div class="cinematic-platform-floor">
+        <div id="fighterStageLeft" class="cinematic-hero-actor cinematic-hero-actor--player">
+          <canvas id="playerBattleCanvas" width="256" height="256" class="fighter-canvas"></canvas>
+          <div class="hero-ground-shadow"></div>
+        </div>
+
+        <div id="fighterStageRight" class="cinematic-hero-actor cinematic-hero-actor--enemy">
+          <canvas id="enemyBattleCanvas" width="256" height="256" class="fighter-canvas"></canvas>
+          <div id="enemyMonsterImage" class="cinematic-monster-actor hidden"></div>
+          <div class="hero-ground-shadow"></div>
+        </div>
+      </div>
+
+      <!-- Impact VFX Layer -->
+      <div id="battleVfxLayer" class="cinematic-impact-vfx hidden"></div>
+
+      <!-- Bottom HUD Bar -->
+      <footer class="cinematic-hud-bottom">
+        <!-- The basic attack and all three skills retain their existing battle logic. -->
+        <div class="hud-skills-group">
+          <div class="hud-skill-slot">
+            <span class="hud-slot-label">BASIC</span>
+            <button type="button" id="btnActionAttack" class="hud-skill-round-btn" title="Basic Attack (Q / Space)">
+              <img id="skillBasicIcon" src="images/skills/btn_flame_slash.png" alt="Basic attack" class="hud-skill-img">
+              <span class="hud-key-tag">Q</span>
+            </button>
+          </div>
+
+          <div class="hud-skill-slot">
+            <span class="hud-mp-cost-badge">22 MP</span>
+            <span class="hud-slot-label">SPECIAL</span>
+            <button type="button" id="btnActionSkill1" class="hud-skill-round-btn" title="Special Skill 1 (W)">
+              <img id="skill1IconImg" src="images/skills/btn_flame_slash.png" alt="Special skill one" class="hud-skill-img">
+              <span class="hud-key-tag">W</span>
+              <span id="skillCooldown1" class="hud-skill-cooldown" hidden></span>
+            </button>
+          </div>
+
+          <div class="hud-skill-slot">
+            <span class="hud-mp-cost-badge">42 MP</span>
+            <span class="hud-slot-label">ULTIMATE</span>
+            <button type="button" id="btnActionSkill2" class="hud-skill-round-btn" title="Special Skill 2 (E)">
+              <img id="skill2IconImg" src="images/skills/btn_burning_arc.png" alt="Special skill two" class="hud-skill-img">
+              <span class="hud-key-tag">E</span>
+              <span id="skillCooldown2" class="hud-skill-cooldown" hidden></span>
+            </button>
+          </div>
+
+          <div class="hud-skill-slot">
+            <span class="hud-mp-cost-badge">65 MP</span>
+            <span class="hud-slot-label">FINISHER</span>
+            <button type="button" id="btnActionSkill3" class="hud-skill-round-btn" title="Special Skill 3 (R)">
+              <img id="skill3IconImg" src="images/skills/btn_inferno_break.png" alt="Special skill three" class="hud-skill-img">
+              <span class="hud-key-tag">R</span>
+              <span id="skillCooldown3" class="hud-skill-cooldown" hidden></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Middle Battle Log / Status -->
+        <div class="hud-status-group">
+          <p id="hudStatusEvent" class="hud-status-line hud-status-line--event">Waiting for battle...</p>
+          <p id="hudStatusMatchup" class="hud-status-line hud-status-line--matchup">⚔ Aeron VS Kael</p>
+          <p id="hudStatusLocation" class="hud-status-line hud-status-line--location">📍 Celestial Peaks</p>
+          <p class="hud-status-line hud-status-line--hint">Q=Basic, W=Special, E=Ultimate, D=Walk, P=Potion</p>
+        </div>
+
+        <!-- Right Action Button Group -->
+        <div class="hud-action-group">
+          <span class="hud-amber-separator"></span>
+          <div class="hud-action-col">
+            <button type="button" id="btnMainAttackAction" class="hud-gold-attack-btn" title="Execute Attack (Q / Space)">
+              <span>⚔</span>
+              <strong>ATTACK (Q)</strong>
+            </button>
+            <div class="hud-sub-actions">
+              <button type="button" id="btnBattleFlee" class="hud-btn-flee">— FLEE</button>
+              <button type="button" id="btnBattlePotion" class="hud-btn-potion">🧪 ×3</button>
+              <button type="button" id="btnBattleAuto" class="hud-btn-auto">▶ AUTO</button>
+              <button type="button" id="btnActionWalk" class="hud-btn-walk" title="Stride Forward (D)">👣 WALK</button>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+
+        <!-- Battle Victory / Defeat Modal -->
+    <div id="battleResultModal" class="battle-result-modal hidden">
+      <div class="result-card">
+        <div class="result-emblem" id="resultEmblem">🏆</div>
+        <span class="eyebrow" id="resultSubtitle">LEGEND WRITTEN IN FIRE</span>
+        <h2 id="resultTitle">VICTORY</h2>
+        <p id="resultMessage">The opponent has fallen. Your legend grows stronger.</p>
+        <div class="result-rewards">
+          <div><span>GOLD EARNED</span><b id="resGold">+150</b></div>
+          <div><span>EXPERIENCE</span><b id="resXp">+80</b></div>
+          <div><span>RATING</span><b id="resRating">+28</b></div>
+        </div>
+        <button id="btnResultContinue" class="btn-result-continue">CONTINUE JOURNEY ➔</button>
+        <button id="btnResultSecondary" class="btn-result-continue btn-result-secondary hidden" type="button">RETURN TO ADVENTURE MODE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CONFIRM MODAL ================= -->
+  <div id="confirmModal" class="auth-modal-overlay hidden" style="z-index:99999">
+    <div class="auth-modal-box" style="text-align:center">
+      <p id="confirmModalText" style="margin:8px 0 18px;font-size:15px;color:#fff"></p>
+      <div style="display:flex;gap:12px;justify-content:center">
+        <button id="btnConfirmYes" type="button" class="btn-danger" style="padding:10px 22px;font-size:12px">YES</button>
+        <button id="btnConfirmNo" type="button" class="auth-submit-btn" style="padding:10px 22px;width:auto">CANCEL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= AUTH MODAL (LOGIN / REGISTER) ================= -->
+  <div id="authModal" class="auth-modal-overlay hidden">
+    <div class="auth-modal-box">
+      <button id="btnAuthClose" class="modal-close-x">✕</button>
+      <div class="auth-tabs">
+        <button id="tabAuthLogin" class="auth-tab active">Log In</button>
+        <button id="tabAuthRegister" class="auth-tab">Create Account</button>
+      </div>
+      <div class="auth-form-wrap">
+        <h3 id="authFormTitle">Your Story Continues</h3>
+        <p id="authFormDesc">Sign in to save your champions and battle progress.</p>
+        <form id="authForm">
+          <div id="authUsernameGroup" class="form-group hidden">
+            <label for="authUsernameInput">USER NAME</label>
+            <input type="text" id="authUsernameInput" placeholder="Enter user name" minlength="2" maxlength="24">
+          </div>
+          <div class="form-group">
+            <label for="authEmailInput">EMAIL ADDRESS</label>
+            <input type="email" id="authEmailInput" placeholder="warrior@eldoria.com" required>
+          </div>
+          <div class="form-group">
+            <label for="authPasswordInput">PASSWORD</label>
+            <input type="password" id="authPasswordInput" placeholder="At least 6 characters" minlength="6" required>
+          </div>
+          <div id="authErrorMessage" class="auth-error-msg hidden"></div>
+          <button type="submit" id="btnAuthSubmit" class="auth-submit-btn">PROCEED ➔</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SUMMON REVEAL MODAL ================= -->
+  <div id="summonRevealModal" class="summon-reveal-overlay hidden">
+    <div class="summon-reveal-card">
+      <span class="reveal-stars">✦ ✧ ✦</span>
+      <span class="eyebrow" id="revealTag">NEW DESTINY AWAKENED</span>
+      <div class="reveal-portrait-box">
+        <canvas id="revealCanvas" width="256" height="256"></canvas>
+      </div>
+      <span id="revealRarity" class="reveal-rarity">LEGENDARY · FIRE</span>
+      <h2 id="revealName">Aeron</h2>
+      <p id="revealTitle">The Flame Striker</p>
+      <p id="revealDesc" class="reveal-desc">A new warrior has joined your roster!</p>
+      <button id="btnRevealClose" class="btn-reveal-close">CLAIM CHAMPION ➔</button>
+    </div>
+  </div>
+
+  <!-- Core Standalone Game Engine Script -->
+  <script src="js/game.js?v=accounts-9"></script>
+</body>
+</html>
